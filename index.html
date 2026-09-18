@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SF SMART POS SYSTEM v3.60</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a84ff">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="icon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <img id="loginLogo" class="login-logo-img" alt="Shop Logo" style="display:none">
+    <h1 id="loginShopName"></h1>
+    <p id="loginAppName">SF SMART POS SYSTEM</p>
+    <div id="loginShopContact" class="login-shop-contact"></div>
+    <form id="loginForm">
+      <label>Username</label>
+      <input id="loginUser" autocomplete="username" required placeholder="Enter username">
+      <label>Password</label>
+      <input id="loginPass" type="password" autocomplete="current-password" required placeholder="Enter password">
+      <button class="primary big" type="submit">LOGIN</button>
+      <div id="loginError" class="login-error"></div>
+    </form>
+    <small>Default login: <b>admin</b> / <b>admin123</b><br>Change the password from Settings in the next security upgrade.</small>
+  </div>
+</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><img id="brandLogo" class="brand-logo-img" alt="Shop Logo" style="display:none"><div><b id="brandShopName"></b></div></div>
+    <div class="sidebar-nav-shell">
+      <nav class="sidebar-nav-scroll" id="sidebarNavScroll">
+      <button class="nav active" data-page="dashboard"><span class="nav-icon">⌂</span><span class="nav-label">Dashboard</span></button>
+      <button class="nav nav-parent" id="productsNav" type="button" onclick="toggleProductsMenu()"><span class="nav-icon">▦</span><span class="nav-label">Products &amp; Stock</span><span class="nav-chevron">⌄</span></button>
+      <div id="productsSubmenu" class="nav-submenu">
+        <button class="subnav" type="button" onclick="showPage('products')"><span class="subnav-num">01</span><span>Add Products</span></button>
+        <button class="subnav" type="button" onclick="showPage('stockdetails')"><span class="subnav-num">02</span><span>Stock Details</span></button>
+      </div>
+      <button class="nav" data-page="pos"><span class="nav-icon">▣</span><span class="nav-label">POS Billing</span></button>
+      <button class="nav" data-page="sales"><span class="nav-icon">▤</span><span class="nav-label">Sales History</span></button>
+      <button class="nav" data-page="customers"><span class="nav-icon">♙</span><span class="nav-label">Customers</span></button>
+      <button class="nav" data-page="credit"><span class="nav-icon">▣</span><span class="nav-label">Credit Bills</span></button>
+      <button class="nav nav-parent" id="repairingNav" type="button" onclick="toggleRepairingMenu()"><span class="nav-icon">🔧</span><span class="nav-label">Repairing</span><span class="nav-chevron">⌄</span></button>
+      <div id="repairingSubmenu" class="nav-submenu">
+        <button class="subnav" type="button" onclick="showTemporaryView('repairs')"><span class="subnav-num">01</span><span>🔧 Add Repair</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('technician-commission')"><span class="subnav-num">02</span><span>👨‍🔧 Technician Commission</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('my-profit')"><span class="subnav-num">03</span><span>💰 My Profit Dashboard</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('technician-profiles')"><span class="subnav-num">04</span><span>👨‍🔧 Technician Profile</span></button>
+      </div>
+      <button class="nav nav-parent" id="temporaryNav" type="button" onclick="toggleTemporaryMenu()"><span class="nav-icon">✎</span><span class="nav-label">Temporary Accounts</span><span class="nav-chevron">⌄</span></button>
+      <div id="temporarySubmenu" class="nav-submenu">
+        <button class="subnav" type="button" onclick="showTemporaryView('dashboard')"><span class="subnav-num">01</span><span>Temporary Dashboard</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('sale')"><span class="subnav-num">02</span><span>New Sale</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('sales')"><span class="subnav-num">03</span><span>Sales History</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('credit')"><span class="subnav-num">04</span><span>Credit Bills</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('payment')"><span class="subnav-num">05</span><span>Credit Payment</span></button>
+        <button class="subnav" type="button" onclick="showTemporaryView('expenses')"><span class="subnav-num">06</span><span>Daily Expenses</span></button>
+      </div>
+      <button class="nav" data-page="suppliers"><span class="nav-icon">♧</span><span class="nav-label">Suppliers</span></button>
+      <button class="nav" data-page="reports"><span class="nav-icon">◫</span><span class="nav-label">Reports</span></button>
+      <button class="nav" data-page="data"><span class="nav-icon">▣</span><span class="nav-label">Data &amp; Backup</span></button>
+      <button class="nav" type="button" onclick="openUserManagement()"><span class="nav-icon">♙</span><span class="nav-label">User Management</span><span class="nav-chevron">🔒</span></button>
+      <button class="nav" data-page="settings" onclick="openShopSettings()"><span class="nav-icon">⚙</span><span class="nav-label">Shop Settings</span></button>
+      <button class="nav" type="button" onclick="openRepairStickerSettings()"><span class="nav-icon">🏷</span><span class="nav-label">Sticker Printer Settings</span></button>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button id="menuBtn" class="iconbtn">☰</button>
+      <div><h1 id="pageTitle">Dashboard</h1><span id="dateNow"></span></div>
+      <button id="installAppBtn" class="secondary install-app-btn" style="display:none" type="button">⬇ Install App</button>
+      <div class="top-actions"><span id="currentUserBadge" class="status">👤 User: —</span><button id="repairPriceBell" class="repair-price-bell" type="button" onclick="openRepairPriceNotifications()" title="Repair price notifications" aria-label="Repair price notifications">🔔<span id="repairPriceBellCount" class="repair-price-bell-count">0</span></button><span class="status">● System Ready</span> <button class="secondary" onclick="logout()">Logout</button></div>
+    </header>
+
+    <section id="dashboard" class="page active dashboard-page">
+      <div class="dashboard-hero-spacer"></div>
+      <div class="dashboard-theme-switch-row">
+        <button id="themeSwitch" class="theme-switch" type="button" onclick="toggleThemeMode()" aria-label="Switch between light mode and dark mode">
+          <span id="themeSwitchLabel" class="theme-switch-label">Light Mode</span>
+          <span class="theme-switch-track"><span id="themeSwitchKnob" class="theme-switch-knob">☀</span></span>
+        </button>
+      </div>
+      <div class="cards dashboard-kpis">
+        <div class="card dashboard-kpi-card kpi-user"><div class="kpi-icon">●</div><div class="kpi-content"><span>Logged-in User ID</span><strong id="dashUserId">—</strong><small id="dashUserRole">Current user</small></div><b class="kpi-arrow">›</b></div>
+        <div class="card dashboard-kpi-card kpi-sales"><div class="kpi-icon">▰</div><div class="kpi-content"><span>Today's Sales</span><strong id="dashSales">Rs. 0</strong><small id="dashInvoices">0 invoices</small></div><b class="kpi-arrow">›</b></div>
+        <div class="card dashboard-kpi-card kpi-profit"><div class="kpi-icon">↗</div><div class="kpi-content"><span>Today's Profit</span><strong id="dashProfit">Rs. 0</strong><small>Based on recorded cost</small></div><b class="kpi-arrow">›</b></div>
+        <div class="card dashboard-kpi-card kpi-stock"><div class="kpi-icon">◆</div><div class="kpi-content"><span>Stock Items</span><strong id="dashStock">0</strong><small id="dashLow">0 low stock</small></div><b class="kpi-arrow">›</b></div>
+        <div class="card dashboard-kpi-card kpi-customers"><div class="kpi-icon">●●</div><div class="kpi-content"><span>Customers</span><strong id="dashCustomers">0</strong><small>Registered customers</small></div><b class="kpi-arrow">›</b></div>
+        <div class="card dashboard-kpi-card kpi-credit dashboard-clickable-card" onclick="openDashboardCreditDetails()" title="Click to view credit outstanding details"><div class="kpi-icon">▰</div><div class="kpi-content"><span>Credit Outstanding</span><strong id="dashCredit">Rs. 0</strong><small id="dashCreditCustomers">0 credit customers</small></div><b class="kpi-arrow">›</b></div>
+      </div>
+      <div class="dashboard-lower-grid">
+        <div class="panel dashboard-chart-panel">
+          <div class="panel-head"><div><h2><span class="ios-panel-icon">▥</span> Sales Performance</h2></div><button class="chart-period" type="button">This Month <span>⌄</span></button></div>
+          <div id="dashboard3dChart" class="dashboard-3d-chart" aria-label="Monthly sales 3D line chart"></div>
+        </div>
+        <div class="panel dashboard-quick-panel"><div class="panel-head"><h2><span class="quick-title-icon">⚡</span> Quick Actions</h2></div>
+          <div class="quick"><button onclick="openProductModal()"><span class="quick-icon">＋</span><span><b>Add Product</b><small>New product</small></span></button><button onclick="showPage('products')"><span class="quick-icon">◆</span><span><b>Stock Details</b><small>View stock</small></span></button><button onclick="showPage('pos')"><span class="quick-icon">🛒</span><span><b>New Sale</b><small>Start billing</small></span></button><button onclick="showPage('reports')"><span class="quick-icon">▤</span><span><b>Reports</b><small>View reports</small></span></button><button onclick="openUserManagement()"><span class="quick-icon">♙</span><span>User Management</span></button><button onclick="openCompanyManagement()"><span class="quick-icon">▦</span><span>Company Management</span></button><button onclick="showPage('data')"><span class="quick-icon">▣</span><span>Data &amp; Backup</span></button><button onclick="openShopSettings()"><span class="quick-icon">⚙</span><span>Shop Settings</span></button></div>
+        </div>
+      </div>
+      <div class="dashboard-support-grid">
+        <div class="panel"><div class="panel-head"><h2>Low Stock</h2></div><div id="lowStockList" class="list"></div></div>
+        <div class="panel"><div class="panel-head"><h2>👤 Current User Activity</h2><span class="badge ok">Logged In</span></div><div class="grid2" style="margin-bottom:0"><div><b>User ID:</b> <span id="dashActivityUser">—</span></div><div><b>Role:</b> <span id="dashActivityRole">—</span></div><div><b>Today's Bills Made By This User:</b> <span id="dashUserBills">0</span></div><div><b>Today's Stock Entries By This User:</b> <span id="dashUserStock">0</span></div></div></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h2>Recent Sales</h2><button class="textbtn" onclick="showPage('sales')">View all →</button></div><div id="recentSales"></div></div>
+    </section>
+
+    <section id="products" class="page">
+      <div class="toolbar"><input id="productSearch" placeholder="Search product, brand, model or barcode..." oninput="renderProducts()"><select id="catFilter" onchange="renderProducts()"></select><button class="primary" onclick="openProductModal()">＋ Add Product</button><button class="secondary" onclick="exportStockExcel()">📊 Export Stock Report to Excel</button></div>
+      <div class="panel table-wrap"><table><thead><tr><th>Code</th><th>Product</th><th>Category</th><th>IMEI / Serial</th><th>Cost</th><th>Sale Price</th><th>Qty</th><th>Status</th><th>Stock Entered / Updated By</th><th></th></tr></thead><tbody id="productTable"></tbody></table></div>
+    </section>
+
+    <section id="stockdetails" class="page stock-details-page">
+      <div class="stock-details-hero">
+        <div><span class="stock-kicker">INVENTORY INTELLIGENCE</span><h2>Stock Details &amp; Product Analysis</h2><p>See your available stock category-wise and understand where your money is tied up.</p></div>
+        <button class="secondary" type="button" onclick="showPage('products')">← Add / Manage Products</button>
+      </div>
+      <div class="cards stock-summary-cards">
+        <div class="card"><span>Total Units Available</span><strong id="stockDetailQty">0</strong><small>All categories combined</small></div>
+        <div class="card"><span>Stock Cost Value</span><strong id="stockDetailCost">Rs. 0</strong><small>Your purchase investment</small></div>
+        <div class="card"><span>Potential Sales Value</span><strong id="stockDetailRetail">Rs. 0</strong><small>If all current stock is sold</small></div>
+        <div class="card"><span>Potential Gross Profit</span><strong id="stockDetailProfit">Rs. 0</strong><small>Before operating expenses</small></div>
+      </div>
+      <div class="stock-charts-grid">
+        <div class="panel stock-chart-panel">
+          <div class="panel-head"><div><h2>📦 Category-wise Available Stock</h2><small class="muted">Available units currently in stock by category.</small></div><span class="chart-live-badge">LIVE STOCK</span></div>
+          <div id="stockCategoryChart" class="stock-category-chart" aria-label="Category-wise available stock graph"></div>
+        </div>
+        <div class="panel stock-chart-panel sales-chart-panel">
+          <div class="panel-head"><div><h2>🛒 Category-wise Sale Stock</h2><small class="muted">Units sold by category from recorded sales.</small></div><span class="chart-live-badge sales-live-badge">SALES</span></div>
+          <div id="stockSalesCategoryChart" class="stock-category-chart" aria-label="Category-wise sale stock graph"></div>
+        </div>
+      </div>
+      <div class="grid2 stock-analysis-grid">
+        <div class="panel"><div class="panel-head"><h2><span class="ios-title-icon">⌁</span> Product Analysis</h2></div><div id="stockAnalysisList" class="analysis-list"></div></div>
+        <div class="panel"><div class="panel-head"><h2><span class="ios-title-icon">◉</span> Inventory Categories</h2></div><div id="stockRecommendations" class="analysis-list"></div></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h2>📊 Category Summary</h2><span class="muted">Units, cost value and potential sales value</span></div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Products</th><th>Units Available</th><th>Stock Cost</th><th>Potential Sales</th><th>Potential Profit</th><th>Low Stock</th></tr></thead><tbody id="stockCategoryTable"></tbody></table></div></div>
+    </section>
+
+    <div id="neverSoldModal" class="sf-overlay" aria-hidden="true">
+      <div class="sf-glass-modal stale-stock-modal">
+        <div class="sf-modal-head"><div><span class="sf-modal-kicker">INVENTORY INSIGHT</span><h2>Products Never Sold</h2></div><button class="sf-modal-close" onclick="closeNeverSoldModal()">×</button></div>
+        <p class="sf-modal-sub">These products currently have stock available, but no recorded sales have been found for them.</p>
+        <div id="neverSoldList" class="stale-stock-list"></div>
+      </div>
+    </div>
+
+    <div id="staleStockModal" class="sf-overlay" aria-hidden="true">
+      <div class="sf-glass-modal stale-stock-modal">
+        <div class="sf-modal-head"><div><span class="sf-modal-kicker">INVENTORY ALERT</span><h2>Products with no sales for 4+ months</h2></div><button class="sf-modal-close" onclick="closeStaleStockModal()">×</button></div>
+        <p class="sf-modal-sub">These products still have stock, but no sale has been recorded for more than four months.</p>
+        <div id="staleStockList" class="stale-stock-list"></div>
+      </div>
+    </div>
+
+    <section id="pos" class="page">
+      <div class="pos-grid">
+        <div class="panel">
+          <div class="panel-head"><h2>New Invoice</h2><span id="invoiceNo"></span></div>
+          <div class="toolbar compact"><input id="posSearch" placeholder="Scan barcode or search product..." oninput="renderPosProducts()"></div>
+          <div id="posProducts" class="product-picks"></div>
+          <h3>Cart</h3><div id="cart"></div>
+        </div>
+        <div class="panel checkout">
+          <h2>Checkout</h2>
+          <label>Customer Name</label><input id="saleCustomer" placeholder="Walk-in Customer"><label>WhatsApp / Phone Number</label><input id="saleWhatsapp" type="tel" placeholder="0771234567">
+          <label id="saleAddressLabel" style="display:none">Customer Address</label><input id="saleAddress" style="display:none" placeholder="Customer address">
+          <label>Discount (Rs.)</label><input id="discount" type="number" min="0" value="0" oninput="renderCart()">
+          <label>Payment Method</label><select id="payment" onchange="toggleCreditCustomerFields()"><option>Cash</option><option>Card</option><option>Bank Transfer</option><option>Credit</option></select>
+          <label>Cash Received (Rs.)</label><input id="cashReceived" type="number" min="0" value="0" oninput="renderCart()">
+          <div class="totals"><div>Subtotal <b id="subTotal">Rs. 0</b></div><div>Discount <b id="discTotal">Rs. 0</b></div><div class="grand">Total <b id="grandTotal">Rs. 0</b></div><div>Balance <b id="balance">Rs. 0</b></div></div>
+          <button class="primary big" onclick="handleCompleteSale(false)">SAVE & PRINT INVOICE</button><button class="secondary big" onclick="handleCompleteSale(true)">SAVE & SEND BILL ON WHATSAPP</button>
+          <button class="secondary big" onclick="clearCart()">Clear Cart</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="sales" class="page"><div class="toolbar"><input id="salesSearch" placeholder="Search invoice/customer..." oninput="renderSales()"><button class="secondary" onclick="exportSalesExcel()">📊 Export Sales Report to Excel</button></div><div class="panel table-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Profit</th><th>Bill Made By</th><th>Action</th></tr></thead><tbody id="salesTable"></tbody></table></div></section>
+
+    <section id="customers" class="page"><div class="toolbar"><input id="customerSearch" placeholder="Search customers..." oninput="renderCustomers()"><button class="primary" onclick="addCustomer()">＋ Add Customer</button></div><div class="panel table-wrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Address</th><th>Outstanding</th></tr></thead><tbody id="customerTable"></tbody></table></div></section>
+
+<section id="credit" class="page">
+  <div class="cards">
+    <div class="card"><span>Total Credit Sales</span><strong id="creditTotalSales">Rs. 0</strong><small>All unpaid credit invoices</small></div>
+    <div class="card"><span>Total Paid</span><strong id="creditTotalPaid">Rs. 0</strong><small>Payments received</small></div>
+    <div class="card"><span>Total Balance</span><strong id="creditTotalBalance">Rs. 0</strong><small>Current outstanding</small></div>
+    <div class="card"><span>Credit Customers</span><strong id="creditCustomerCount">0</strong><small>Customers with balance</small></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>▣ Credit Customer Bills & Payments</h2><button class="secondary" onclick="exportCreditExcel()">📊 Export Credit Report to Excel</button></div>
+    <p class="muted">View each credit customer's bills, total credit, paid amount and remaining balance. Use <b>Paid</b> to record part or full payments.</p>
+    <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Credit Bills</th><th>Total Credit</th><th>Paid</th><th>Balance</th><th>Paid</th></tr></thead><tbody id="creditCustomerTable"></tbody></table></div>
+  </div>
+  <div class="panel credit-details-group" style="margin-top:16px">
+    <div class="panel-head credit-group-head"><div><h2>▣ Credit Bill Details &amp; Payment History</h2><p class="muted" style="margin:5px 0 0">Both credit information and customer payment records are grouped here for easy understanding.</p></div></div>
+    <div class="credit-detail-section">
+      <div class="credit-section-title"><span>🧾 Credit Bill Details</span><small>Invoice, credit amount, paid amount, balance and Bill Made By</small></div>
+      <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Total Credit</th><th>Paid</th><th>Balance</th><th>Bill Made By</th></tr></thead><tbody id="creditBillTable"></tbody></table></div>
+    </div>
+    <div class="credit-detail-divider"></div>
+    <div class="credit-detail-section">
+      <div class="credit-section-title"><span>💰 Payment History</span><small>Every payment received, including partial payments, with User ID</small></div>
+      <div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Amount Paid</th><th>Received By</th><th>Reference</th><th>Action</th></tr></thead><tbody id="creditPaymentTable"></tbody></table></div>
+    </div>
+  </div>
+</section>
+
+    <section id="temporary" class="page">
+      <div id="temporaryDashboardView" class="temporary-view">
+        <div class="cards">
+          <button class="card dashboard-clickable-card" type="button" onclick="showTemporaryView('income')"><span>Today Total Income</span><strong id="tempDashIncome">Rs. 0</strong><small>Temporary sales</small></button>
+          <button class="card dashboard-clickable-card" type="button" onclick="showTemporaryView('expenses')"><span>Today Total Expense</span><strong id="tempDashExpense">Rs. 0</strong><small>Daily expenses</small></button>
+          <div class="card"><span>Today Balance</span><strong id="tempDashBalance">Rs. 0</strong><small>Income − Expense</small></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h2>Temporary Account Dashboard</h2><p class="muted">Today’s temporary income and expenses.</p></div></div>
+          <div class="dashboard-support-grid">
+            <div class="panel dashboard-clickable-card" onclick="showTemporaryView('income')"><div class="panel-head"><h3>💰 Income (Sales)</h3><span class="badge ok">View</span></div><p>Click to see today’s temporary sales and export them to Excel.</p></div>
+            <div class="panel dashboard-clickable-card temp-expense-dashboard-card"><div class="panel-head"><h3>💸 Expenses</h3><span class="badge ok">View</span></div><p>Click to see today’s expenses and export them to Excel.</p><button class="primary temp-enter-expense-btn" type="button" onclick="event.stopPropagation(); showTemporaryView('expenses')">＋ ENTER EXPENSE</button></div>
+            <div class="panel dashboard-clickable-card my-profit-dashboard-card" onclick="showTemporaryView('my-profit')"><div class="panel-head"><h3>💰 My Profit Dashboard</h3><span class="badge ok">View</span></div><p>Token-wise technician commission, my service commission, item profit and total profit.</p><button class="primary my-profit-open-btn" type="button" onclick="event.stopPropagation(); showTemporaryView('my-profit')">VIEW MY PROFIT</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="temporaryIncomeView" class="temporary-view" style="display:none">
+        <div class="toolbar"><button class="secondary" onclick="showTemporaryView('dashboard')">← Dashboard</button><button class="secondary" onclick="exportTemporaryIncomeExcel()">📊</button></div>
+        <div class="panel table-wrap"><div class="panel-head"><div><h2>Temporary Income — Sales</h2><p class="muted">Today’s Temporary Account sales.</p></div></div><table><thead><tr><th>Bill Number</th><th>Buy Date</th><th>Customer</th><th>Amount</th><th>Payment</th></tr></thead><tbody id="tempIncomeTable"></tbody></table></div>
+      </div>
+
+      <div id="temporaryExpensesView" class="temporary-view" style="display:none">
+        <div class="panel">
+          <div class="panel-head"><div><h2>Daily Expenses</h2><p class="muted">Enter expenses manually. These do not affect Stock.</p></div><button class="secondary" onclick="exportTemporaryExpensesExcel()">📊</button></div>
+          <div class="form2"><div><label>Expense Description *</label><input id="tempExpenseName" placeholder="e.g. Electricity, Transport, Tea"></div><div><label>Amount (Rs.) *</label><input id="tempExpenseAmount" type="number" min="0.01" step="0.01" placeholder="0"></div></div>
+          <div class="form2"><div><label>Date &amp; Time</label><input id="tempExpenseDate" type="datetime-local"></div><div><label>Note</label><input id="tempExpenseNote" placeholder="Optional note"></div></div>
+          <div class="modal-actions"><button class="primary big" onclick="saveTemporaryExpense()">SAVE EXPENSE</button><button class="secondary big" onclick="clearTemporaryExpenseForm()">CLEAR</button></div>
+        </div>
+        <div class="panel table-wrap" style="margin-top:16px"><div class="panel-head"><h2>Expense History</h2><button class="secondary" onclick="exportTemporaryExpensesExcel()">📊</button></div><table><thead><tr><th>Date</th><th>Expense</th><th>Amount</th><th>Note</th><th>Added By</th><th>Action</th></tr></thead><tbody id="tempExpenseTable"></tbody></table></div>
+      </div>
+
+
+      <div id="temporaryTechnicianProfilesView" class="temporary-view" style="display:none">
+        <div class="technician-profile-hero panel">
+          <div><span class="my-profit-kicker">TECHNICIAN MANAGEMENT</span><h2>👨‍🔧 Technician Profile</h2><p class="muted">Add technician details and manage commission percentages by effective month. Previous repair records keep their original commission.</p></div>
+          <button class="primary" type="button" onclick="openTechnicianProfileModal()">＋ ADD TECHNICIAN</button>
+        </div>
+        <div class="panel technician-profile-panel">
+          <div class="panel-head"><div><h2>Technician List</h2><p class="muted">The commission shown is the rate currently effective for this month.</p></div><span class="badge ok" id="technicianProfileCount">0 Technicians</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Technician</th><th>Phone</th><th>Join Date</th><th>Current Commission</th><th>Commission History</th><th>Status</th><th>Action</th></tr></thead><tbody id="technicianProfileTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <div id="temporaryMyProfitView" class="temporary-view" style="display:none">
+        <div class="my-profit-hero panel">
+          <div>
+            <span class="my-profit-kicker">OWNER PROFIT CONTROL</span>
+            <h2>💰 My Profit Dashboard</h2>
+            <p class="muted">Only your repair profit is shown here. Technician commission is deducted from the Repair / Service Profit before calculating your service commission.</p>
+          </div>
+          <div class="my-profit-hero-form">
+            <label>From Month</label><input id="myProfitFromMonth" type="month" onchange="renderMyProfitDashboard()">
+            <label>To Month</label><input id="myProfitToMonth" type="month" onchange="renderMyProfitDashboard()">
+            <button class="iconbtn my-profit-export-btn" type="button" onclick="exportMyProfitDashboardExcel()" title="Export selected month range to Excel" aria-label="Export selected month range to Excel">📊</button>
+            <button class="secondary" type="button" onclick="clearMyProfitRange()">CLEAR</button>
+          </div>
+        </div>
+        <div class="my-profit-range-note"><span>Selected Range:</span> <b id="myProfitRangeLabel">All finished repairs</b><span>•</span><span id="myProfitRepairCount">0</span> finished repairs</div>
+        <div class="cards my-profit-summary-cards">
+          <div class="card"><span>🧩 My Item Profit</span><strong id="myProfitItemProfit">Rs. 0</strong><small>Item Sale Profit = Item Sale − Item Cost</small></div>
+          <div class="card"><span>🔧 My Service Commission</span><strong id="myProfitServiceCommission">Rs. 0</strong><small>Service Profit − Technician Commission</small></div>
+          <div class="card"><span>💰 My Total Profit</span><strong id="myProfitTotalProfit">Rs. 0</strong><small>My Item Profit + My Service Commission</small></div>
+          <div class="card"><span>👨‍🔧 Technician Commission</span><strong id="myProfitTechnicianCommission">Rs. 0</strong><small>Amount paid to technicians</small></div>
+          <div class="card"><span>🔧 Repair / Service Profit</span><strong id="myProfitServiceProfit">Rs. 0</strong><small>Before technician commission</small></div>
+        </div>
+        <div class="panel my-profit-panel" style="margin-top:16px">
+          <div class="panel-head"><div><h2>1. Token-wise My Profit</h2><p class="muted">Each finished repair shows technician commission, your service commission, your item profit and your total profit.</p></div></div>
+          <div class="table-wrap"><table class="repair-table my-profit-table"><thead><tr><th>Token</th><th>Finished Date</th><th>Customer</th><th>Device</th><th>Technician</th><th>Technician Commission</th><th>My Service Commission</th><th>My Item Profit</th><th>My Total Profit</th></tr></thead><tbody id="myProfitTokenTable"></tbody></table></div>
+        </div>
+        <div class="panel my-profit-panel" style="margin-top:16px">
+          <div class="panel-head"><div><h2>2. Monthly My Profit</h2><p class="muted">Month-wise item profit, service commission and your total profit.</p></div></div>
+          <div class="table-wrap"><table class="repair-table my-profit-table"><thead><tr><th>Month</th><th>Finished Repairs</th><th>My Item Profit</th><th>My Service Commission</th><th>My Total Profit</th><th>Service Profit</th><th>Technician Commission</th></tr></thead><tbody id="myProfitMonthlyTable"></tbody></table></div>
+        </div>
+        <div class="panel my-profit-panel" style="margin-top:16px">
+          <div class="panel-head"><div><h2>3. Technician Monthly Service Commission</h2><p class="muted">See how much service profit each technician takes as commission and how much remains as your service commission.</p></div></div>
+          <div class="table-wrap"><table class="repair-table my-profit-table"><thead><tr><th>Month</th><th>Technician</th><th>Repairs</th><th>Repair / Service Profit</th><th>Technician Takes</th><th>My Service Commission</th></tr></thead><tbody id="myProfitTechnicianTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <div id="temporaryTechnicianCommissionView" class="temporary-view" style="display:none">
+        <div class="panel technician-commission-panel">
+          <div class="panel-head"><div><h2>💼 Technician Commission</h2><p class="muted">Month-wise commission earned from Repair / Service Charge Profit.</p></div><div class="repair-analysis-filters"><input id="tempCommissionMonth" type="month" onchange="renderTechnicianCommission()"></div></div>
+          <div class="repair-analysis-profit-cards technician-commission-cards">
+            <div class="card"><span>👨‍🔧 Technicians</span><strong id="tempCommissionTechCount">0</strong><small>Technicians with repair records</small></div>
+            <div class="card"><span>🔧 Service Profit</span><strong id="tempCommissionServiceProfit">Rs. 0</strong><small>Repair / Service Charge Profit</small></div>
+            <div class="card"><span>💰 Total Commission</span><strong id="tempCommissionTotal">Rs. 0</strong><small>Commission earned for selected month</small></div>
+          </div>
+          <div class="table-wrap"><table class="repair-table"><thead><tr><th>Technician</th><th>Commission %</th><th>Completed Repairs</th><th>Repair / Service Profit</th><th>Technician Commission</th></tr></thead><tbody id="tempTechnicianCommissionTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <div id="temporaryRepairsView" class="temporary-view" style="display:none">
+        <div class="panel repair-service-panel">
+          <div class="panel-head">
+            <div><h2>🔧 Repair Service</h2><p class="muted">Receive devices, record repair parts/cost, calculate service charge &amp; profit, and track technician performance.</p></div>
+            <span class="badge ok">Repair Management</span>
+          </div>
+          <div class="repair-form-grid">
+            <div>
+              <label>Repair Service *</label>
+              <select id="repairService"></select>
+            </div>
+            <div>
+              <label>Customer Phone Number *</label>
+              <input id="repairPhone" type="tel" placeholder="0771234567" oninput="repairPhoneChanged()" autocomplete="off">
+              <small id="repairPhoneHint" class="muted">If the customer already exists, the name will fill automatically.</small>
+            </div>
+            <div>
+              <label>Customer Name *</label>
+              <input id="repairCustomerName" placeholder="Customer name">
+            </div>
+            <div>
+              <label>Device Model *</label>
+              <input id="repairDeviceModel" placeholder="e.g. iPhone 11 / Samsung A54">
+            </div>
+            <div class="repair-receiving-field">
+              <label>Receiving Items * <span class="muted">(click an item to add)</span></label>
+              <div id="repairReceivingItemCards" class="repair-receiving-item-cards"></div>
+              <select id="repairReceivingItem" style="display:none" aria-hidden="true"></select>
+              <button class="secondary repair-manage-receiving-btn" type="button" onclick="openRepairReceivingItemsModal()" title="Manage Receiving Items">⚙ Manage Receiving Items</button>
+              <div id="repairSelectedReceivingItems" class="repair-selected-items"></div>
+              <small class="muted">Click Phone, Charger, Back Cover, SIM, etc. to add it. Added items appear below like a cart.</small>
+            </div>
+            <div>
+              <label>Device Issue *</label>
+              <textarea id="repairIssue" rows="3" placeholder="Describe the customer's device issue"></textarea>
+            </div>
+          </div>
+          <div class="repair-form-actions"><button class="primary big" type="button" onclick="saveRepairService()">💾 SAVE &amp; PRINT TOKEN</button><button class="secondary big" type="button" onclick="clearRepairForm()">CLEAR</button></div><div class="repair-sticker-info">🏷 Sticker printing: <b id="repairStickerInfoText">30mm × 20mm each • 3 per row</b></div>
+        </div>
+
+        <div class="cards repair-summary-cards" style="margin-top:16px">
+          <div class="card"><span>Pending Repairs</span><strong id="repairPendingCount">0</strong><small>Devices currently with shop</small></div>
+          <div class="card"><span>Parts / Item Cost</span><strong id="repairCostTotal">Rs. 0</strong><small>Finished + pending repair cost</small></div>
+          <div class="card"><span>Repair Profit</span><strong id="repairProfitTotal">Rs. 0</strong><small>Customer charge − item cost</small></div>
+          <div class="card"><span>Service Charges</span><strong id="repairServiceTotal">Rs. 0</strong><small>Repair labour/service amount</small></div>
+          <div id="repairMissingPriceCard" class="card repair-missing-price-card" role="button" tabindex="0" onclick="openNextRepairMissingPrice()" onkeydown="if(event.key==='Enter'||event.key===' ')openNextRepairMissingPrice()"><span>⚠ PRICE ENTRY NEEDED</span><strong id="repairMissingPriceCount">0</strong><small id="repairMissingPriceText">All item Cost &amp; Sale Prices entered</small><button type="button" class="repair-missing-price-btn" onclick="event.stopPropagation();openNextRepairMissingPrice()">VIEW &amp; ENTER</button></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head"><div><h2>⏳ Pending Repair Devices</h2><p class="muted">When a repair is finished, it automatically disappears from this pending list.</p></div></div>
+          <div class="repair-filter-grid">
+            <input id="repairPendingSearch" placeholder="Search token / phone / customer / model / issue..." oninput="renderRepairPending()">
+            <select id="repairPendingTechnicianFilter" onchange="renderRepairPending()"><option value="">All Technicians</option></select>
+            <select id="repairPendingServiceFilter" onchange="renderRepairPending()"><option value="">All Services</option></select>
+            <select id="repairPendingReceivingFilter" onchange="renderRepairPending()"><option value="">All Receiving Items</option></select>
+          </div>
+          <div class="table-wrap"><table class="repair-table"><thead><tr><th>Token</th><th>Date</th><th>Customer</th><th>Phone</th><th>Device</th><th>Receiving Item</th><th>Issue</th><th>Technician</th><th>Status / Action</th></tr></thead><tbody id="repairPendingTable"></tbody></table></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head"><div><h2>📋 Repair History &amp; Cost Analysis</h2><p class="muted">Every repair remains here after completion. Add parts one by one and see exactly where the money goes.</p></div><button class="secondary" type="button" onclick="exportRepairHistoryExcel()">📊 Export</button></div>
+          <div class="repair-filter-grid">
+            <input id="repairHistorySearch" placeholder="Search repair history..." oninput="renderRepairHistory()">
+            <select id="repairHistoryStatusFilter" onchange="renderRepairHistory()"><option value="">All Status</option><option value="Pending">Pending</option><option value="Finished">Finished</option><option value="Return">RETURN</option><option value="Cancelled">Cancelled</option></select>
+            <input id="repairHistoryMonthFilter" type="month" onchange="renderRepairHistory()">
+            <select id="repairHistoryTechnicianFilter" onchange="renderRepairHistory()"><option value="">All Technicians</option></select>
+          </div>
+          <div class="table-wrap"><table class="repair-table"><thead><tr><th>Token</th><th>Date</th><th>Customer</th><th>Device</th><th>Items / Cost</th><th>Customer Charge</th><th>Service Charge / Profit</th><th>Technician</th><th>Status</th></tr></thead><tbody id="repairHistoryTable"></tbody></table></div>
+        </div>
+
+        <div class="panel repair-tech-analysis-panel" style="margin-top:16px">
+          <div class="panel-head"><div><h2>👨‍🔧 Technician Monthly Profit Analysis</h2><p class="muted">Select a month and technician to see Item Sale Profit and Repair / Service Charge Profit separately.</p></div><div class="repair-analysis-filters"><input id="repairAnalysisMonth" type="month" onchange="renderRepairAnalysis()"><select id="repairAnalysisTechnician" onchange="renderRepairAnalysis()"><option value="">All Technicians</option></select></div></div>
+          <div class="repair-analysis-profit-cards">
+            <div class="card"><span>🧩 Item Sale Profit</span><strong id="repairAnalysisItemSaleProfit">Rs. 0</strong><small>Item Sale Total − Item Cost Total</small></div>
+            <div class="card"><span>🔧 Repair / Service Charge Profit</span><strong id="repairAnalysisServiceProfit">Rs. 0</strong><small>Customer Charge − Item Sale Total</small></div>
+            <div class="card"><span>💰 Total Technician Profit</span><strong id="repairAnalysisTotalProfit">Rs. 0</strong><small>Item Sale Profit + Service Charge Profit</small></div>
+          </div>
+          <div class="table-wrap"><table class="repair-table"><thead><tr><th>Technician</th><th>Completed Repairs</th><th>Item Cost</th><th>Item Sale</th><th>Item Sale Profit</th><th>Repair / Service Profit</th><th>Total Profit</th><th>Commission</th></tr></thead><tbody id="repairTechnicianAnalysisTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <div id="temporarySaleView" class="temporary-view">
+        <div class="pos-grid temp-pos-grid">
+          <div class="panel temp-manual-bill">
+            <div class="panel-head"><div><h2>New Invoice</h2><p class="muted">Temporary Accounts — Manual Billing</p></div><span id="tempInvoiceNo" class="temp-invoice-no"></span></div>
+            <div class="temp-manual-note">Type every item manually. <b>No Stock is required and Stock will never be changed.</b></div>
+            <div class="panel-head" style="margin-top:18px"><h3 style="margin:0">Manual Items</h3><button class="secondary" type="button" onclick="addTemporaryItem()">＋ Add Item</button></div>
+            <div class="table-wrap temp-items-wrap"><table class="temp-manual-table"><thead><tr><th>Item / Description</th><th>Qty</th><th>Unit Price (Rs.)</th><th>Total</th><th></th></tr></thead><tbody id="tempItems"></tbody></table></div>
+            <div class="temp-add-row"><button class="secondary" type="button" onclick="addTemporaryItem()">＋ Add Another Item</button></div>
+            <input id="tempDate" type="hidden">
+          </div>
+          <div class="panel checkout temp-checkout">
+            <h2>Checkout</h2>
+            <div id="tempCreditCustomerFields">
+              <label>Customer Name</label>
+              <input id="tempCustomer" list="tempCreditCustomerList" autocomplete="off" placeholder="Type customer name">
+              <datalist id="tempCreditCustomerList"></datalist>
+              <small id="tempCustomerHint" class="muted temp-customer-hint">Existing credit customers will appear as you type.</small>
+              <label>WhatsApp / Phone Number</label><input id="tempPhone" type="tel" placeholder="0771234567">
+            </div>
+            <label>Discount (Rs.)</label><input id="tempDiscount" type="number" min="0" step="0.01" value="0" oninput="updateTemporaryCheckout()">
+            <label>Payment Method</label><select id="tempType" onchange="toggleTemporaryType()"><option value="Cash Sale">Cash Sale</option><option value="Credit Sale">Credit Sale</option></select>
+            <div id="tempCashReceivedWrap">
+              <label id="tempCashReceivedLabel">Cash Received (Rs.)</label><input id="tempCashReceived" type="number" min="0" step="0.01" value="0" placeholder="Enter customer payment amount" oninput="updateTemporaryCheckout()"><small class="muted">Enter the exact amount received from the customer. If it is higher than the total, Change will be shown.</small>
+            </div>
+            <div class="totals">
+              <div>Subtotal <b id="tempSubtotal">Rs. 0</b></div>
+              <div>Discount <b id="tempDiscountTotal">Rs. 0</b></div>
+              <div class="grand">Total <b id="tempTotal">Rs. 0</b></div>
+              <div><span id="tempBalanceLabel">Balance Due</span> <b id="tempBalance">Rs. 0</b></div>
+              <div id="tempChangeRow" style="display:none">Change <b id="tempChange">Rs. 0</b></div>
+            </div>
+            <div id="tempCreditNote" class="temporary-credit-note" style="display:none">Credit Sale: customer details are required. This bill will appear in Temporary Accounts → Credit Bills.</div>
+            <button class="primary big" type="button" onclick="saveTemporarySale(true)">SAVE &amp; PRINT INVOICE</button>
+            <button class="secondary big" type="button" onclick="saveTemporarySale(false)">SAVE ONLY</button>
+            <button class="secondary big" type="button" onclick="clearTemporaryForm()">CLEAR</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="temporarySalesView" class="temporary-view" style="display:none">
+        <div class="toolbar"><input id="tempSalesSearch" placeholder="Search invoice / customer..." oninput="renderTemporarySalesHistory()"><button class="secondary" onclick="exportTemporarySalesExcel()">📊 Export Sales to Excel</button></div>
+        <div class="panel table-wrap"><div class="panel-head"><div><h2>Temporary Sales History</h2><p class="muted">Cash Sales and Credit Sales entered manually. Edit/Delete requires Security Verification.</p></div></div><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Balance</th><th>Bill Made By</th><th>Action</th></tr></thead><tbody id="temporarySalesTable"></tbody></table></div>
+      </div>
+
+      <div id="temporaryCreditView" class="temporary-view" style="display:none">
+        <div class="cards">
+          <div class="card"><span>Total Credit Sales</span><strong id="tempCreditTotalSales">Rs. 0</strong><small>Temporary credit invoices</small></div>
+          <div class="card"><span>Total Paid</span><strong id="tempCreditTotalPaid">Rs. 0</strong><small>Payments received</small></div>
+          <div class="card"><span>Total Balance</span><strong id="tempCreditTotalBalance">Rs. 0</strong><small>Current outstanding</small></div>
+          <div class="card"><span>Credit Customers</span><strong id="tempCreditCustomerCount">0</strong><small>Customers with balance</small></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h2>▣ Temporary Credit Customer Bills &amp; Payments</h2><p class="muted">Same method as the existing Credit Bills page, but only for Temporary Accounts.</p></div><button class="secondary" onclick="exportTemporaryCreditExcel()">📊 Export Credit Report to Excel</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Credit Bills</th><th>Total Credit</th><th>Paid</th><th>Balance</th><th>Paid</th></tr></thead><tbody id="tempCreditCustomerTable"></tbody></table></div>
+        </div>
+        <div class="panel credit-details-group" style="margin-top:16px">
+          <div class="panel-head credit-group-head"><div><h2>▣ Credit Bill Details &amp; Payment History</h2><p class="muted">Click an invoice number to view its full bill details, export that invoice, or reprint it.</p></div></div>
+          <div class="credit-detail-section"><div class="credit-section-title"><span>🧾 Credit Bill Details</span><small>Invoice, date, customer, credit amount, paid amount, balance and Bill Made By</small></div><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Total Credit</th><th>Paid</th><th>Balance</th><th>Bill Made By</th></tr></thead><tbody id="tempCreditBillTable"></tbody></table></div></div>
+          <div class="credit-detail-divider"></div>
+          <div class="credit-detail-section"><div class="credit-section-title"><span>💰 Payment History</span><small>Every payment received, including partial payments, with User ID</small></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Amount Paid</th><th>Received By</th><th>Reference</th><th>Action</th></tr></thead><tbody id="tempCreditPaymentTable"></tbody></table></div></div>
+        </div>
+      </div>
+
+      <div id="tempCustomerBillsModal" class="modal invoice-view-modal"><div class="modal-box" style="width:min(900px,96vw)">
+        <div class="panel-head"><div><h2>👤 Temporary Credit Customer — <span id="tempCustomerBillsName"></span></h2><p class="muted">Invoice number and amount for this customer.</p></div><div style="display:flex;gap:8px;align-items:center"><button class="iconbtn" id="tempCustomerExportBtn" title="Export Excel" aria-label="Export Excel">📊</button><button class="iconbtn" onclick="closeTemporaryCustomerBills()">×</button></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Invoice Number</th><th>Buy Date</th><th>Amount</th><th>Balance</th></tr></thead><tbody id="tempCustomerBillsTable"></tbody></table></div>
+      </div></div>
+
+      <div id="tempPaymentEditModal" class="modal"><div class="modal-box sale-edit-box"><div class="panel-head"><h2>✎ Edit Credit Payment — <span id="tempPaymentEditRef"></span></h2><button class="iconbtn" onclick="closeTemporaryPaymentEdit()">×</button></div><p class="muted">Security Verification passed. Changing this payment recalculates the customer balance.</p><div class="form2"><div><label>Customer</label><input id="tempPaymentEditCustomer" readonly></div><div><label>Balance Before This Payment</label><input id="tempPaymentEditBalance" readonly></div></div><div class="form2"><div><label>Payment Amount (Rs.) *</label><input id="tempPaymentEditAmount" type="number" min="0.01" step="0.01"></div><div><label>Reference / Note</label><input id="tempPaymentEditReference"></div></div><div class="modal-actions"><button class="secondary big" onclick="closeTemporaryPaymentEdit()">CANCEL</button><button class="primary big" onclick="saveEditedTemporaryPayment()">SAVE PAYMENT CHANGES</button></div></div></div>
+
+      <div id="temporaryPaymentView" class="temporary-view" style="display:none">
+        <div class="panel">
+          <div class="panel-head"><div><h2>💰 Temporary Credit Payment Received</h2><p class="muted">Record a partial or full payment against a Temporary Credit customer.</p></div></div>
+          <div class="form2"><div><label>Customer</label><select id="tempPaymentCustomer" onchange="updateTemporaryPaymentBalance()"></select></div><div><label>Current Balance</label><input id="tempPaymentBalance" readonly value="Rs. 0"></div></div>
+          <div class="form2"><div><label>Payment Amount (Rs.) *</label><input id="tempPaymentAmount" type="number" min="0.01" step="0.01" oninput="updateTemporaryPaymentBalance()" placeholder="Enter amount"></div><div><label>Reference / Note</label><input id="tempPaymentReference" placeholder="Optional note"></div></div>
+          <button class="primary big" onclick="recordTemporaryCreditPayment(true)">SAVE &amp; PRINT PAYMENT RECEIPT</button>
+          <button class="secondary big" onclick="recordTemporaryCreditPayment(false)">SAVE PAYMENT ONLY</button>
+        </div>
+        <div class="panel" style="margin-top:16px"><div class="panel-head"><h2>Temporary Credit Customers</h2></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Credit</th><th>Paid</th><th>Balance</th><th>Action</th></tr></thead><tbody id="tempPaymentCustomerTable"></tbody></table></div></div>
+      </div>
+    </section>
+    <section id="suppliers" class="page"><div class="panel empty"><h2>Suppliers</h2><p>Supplier management module is ready for the next build stage.</p></div></section>
+
+    <section id="companies" class="page">
+  <div class="panel">
+    <div class="panel-head"><h2>Company Management</h2><button class="primary" onclick="openAddCompany()">＋ Create New Company</button></div>
+    <p class="muted">Create separate companies/shops in the same application. Each company can have its own details for invoices.</p>
+    <div class="table-wrap"><table><thead><tr><th>Company Name</th><th>Phone</th><th>Address</th><th>Status</th><th>Action</th></tr></thead><tbody id="companyTable"></tbody></table></div>
+  </div>
+</section>
+
+<section id="users" class="page">
+  <div class="panel">
+    <div class="panel-head"><h2>User Management</h2><button class="primary" onclick="openAddUser()">＋ Add User</button></div>
+    <p class="muted">Add or remove login users. Only users with management access can open this section.</p>
+    <div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Action</th></tr></thead><tbody id="userTable"></tbody></table></div>
+  </div>
+</section>
+
+<section id="settings" class="page">
+      <div class="panel">
+        <div class="panel-head"><h2>⚙ Shop Name, Address, Contact & Logo</h2><span class="badge ok">Management Protected</span></div>
+        <p class="muted">These details are used on the login screen, application header and printed bills/invoices. Changes require the management password.</p>
+        <form id="shopSettingsForm">
+          <div class="form2"><div><label>Shop Name *</label><input id="shopSettingName"></div><div><label>Contact Number</label><input id="shopSettingPhone" type="tel"></div></div>
+          <label>Shop Address</label><input id="shopSettingAddress">
+          <label>Invoice Footer</label><input id="shopSettingFooter">
+          <label>Shop Logo</label>
+          <div class="logo-upload-row"><img id="shopLogoPreview" class="shop-logo-preview" alt="Logo Preview" style="display:none"><div><input id="shopLogoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><button type="button" class="secondary" onclick="clearShopLogo()" style="margin-top:8px">REMOVE LOGO</button><p class="muted">Upload your logo. PNG/JPG/WebP recommended. Leave blank if no shop logo is needed.</p></div></div>
+          <button class="primary big" type="submit">SAVE SHOP DETAILS</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="data" class="page">
+      <div class="panel">
+        <div class="panel-head"><h2>💾 Data Backup &amp; Load</h2></div>
+        <p class="muted">Simple backup system. <b>Backup Data</b> saves the complete SF Smart POS database into one JSON file. <b>Load Backup Data</b> restores the complete database from that file.</p>
+        <div class="quick">
+          <button class="primary" onclick="openDataBackupSecurity()">💾 Backup Data</button>
+          <button class="secondary" onclick="openOldDataLoadSecurity()">📂 Load Backup Data</button>
+        </div>
+        <p class="muted" style="margin-top:14px">The backup includes <b>shop logo, shop name, address, phone, users, companies, stock, sales, customers, credit bills, credit payments, Temporary Accounts, settings and all other application data</b>.</p>
+        <p class="muted"><b>Important:</b> Loading a backup replaces the current application data with the selected backup, so the old data from that backup comes back exactly as saved.</p>
+      </div>
+      <div class="panel" style="margin-top:16px"><div class="panel-head"><h2>🔐 Backup Safety</h2></div><div class="cards"><div class="card"><span>Backup File</span><strong>Complete JSON</strong></div><div class="card"><span>Temporary Accounts</span><strong>Included</strong></div><div class="card"><span>Shop Logo &amp; Details</span><strong>Included</strong></div><div class="card"><span>Restore</span><strong>One File</strong></div></div></div>
+    </section>
+
+    <section id="reports" class="page"><div class="cards"><div class="card"><span>Total Sales</span><strong id="rSales">Rs. 0</strong></div><div class="card"><span>Total Profit</span><strong id="rProfit">Rs. 0</strong></div><div class="card"><span>Total Units Sold</span><strong id="rUnits">0</strong></div><div class="card"><span>Stock Value</span><strong id="rStockValue">Rs. 0</strong></div></div><div class="panel"><div class="panel-head"><h2>Business Reports</h2></div><p id="reportText"></p><div class="quick"><button class="secondary" onclick="exportSalesExcel()">📊 Export Sale Report to Excel</button><button class="secondary" onclick="exportStockExcel()">📦 Export Stock Report to Excel</button></div><p class="muted">Reports include the User ID that entered/updated stock and the User ID that created each bill.</p></div><div class="panel" style="margin-top:16px"><div class="panel-head"><h2>👤 User Records — Monthly Bills</h2><div class="quick"><select id="userRecordMonth" onchange="renderUserRecords()"></select><button class="secondary" onclick="exportAllUserMonthlyExcel()">📊 Export All User Records</button></div></div><p class="muted">Shows how many bills each User ID made during the selected month. Click the Excel icon to export that user's monthly bill report.</p><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Role</th><th>Total Bills</th><th>Total Sales</th><th>Excel</th></tr></thead><tbody id="userRecordsTable"></tbody></table></div></div></section>
+  </main>
+</div>
+
+<div id="sessionWarning" class="modal"><div class="modal-box session-warning-box">
+  <div class="panel-head"><h2>⚠ Session Timeout Warning</h2></div>
+  <p>Your session will automatically logout in:</p>
+  <div id="countdownNumber" class="countdown-number">20</div>
+  <p class="muted">Press <b>OK</b> to continue working and cancel the logout.</p>
+  <button class="primary big" onclick="cancelAutoLogout()">OK</button>
+</div></div>
+
+<div id="dashboardCreditDetailsModal" class="modal dashboard-credit-details-modal"><div class="modal-box dashboard-credit-details-box">
+  <div class="panel-head"><div><span class="sf-modal-kicker">CREDIT SUMMARY</span><h2>💳 Credit Outstanding Details</h2></div><button class="iconbtn" onclick="closeDashboardCreditDetails()">×</button></div>
+  <div class="dashboard-credit-summary" id="dashboardCreditSummary"></div>
+  <div class="dashboard-credit-customer-list" id="dashboardCreditCustomerList"></div>
+  <div class="modal-actions"><button class="secondary big" onclick="closeDashboardCreditDetails()">CLOSE</button><button class="primary big" onclick="showPage('credit');closeDashboardCreditDetails()">OPEN CREDIT BILLS</button></div>
+</div></div>
+
+<div id="technicianCommissionModal" class="modal"><div class="modal-box technician-commission-modal-box">
+  <div class="panel-head"><div><span class="sf-security-kicker">SECURITY VERIFIED</span><h2>👨‍🔧 Technician Commission</h2></div><button class="iconbtn" onclick="closeTechnicianCommissionModal()">×</button></div>
+  <div class="technician-commission-hero"><div><span>Technician</span><b id="commissionTechnicianName">—</b></div><div><span>Current Rate</span><b id="commissionCurrentRate">0%</b></div></div>
+  <div class="form2"><div><label>Effective From Month *</label><input id="technicianCommissionEffectiveMonth" type="month"></div><div><label>Commission Percentage (%) *</label><input id="technicianCommissionPercent" type="number" min="0" max="100" step="0.01" placeholder="e.g. 40"></div></div>
+  <p class="muted">This percentage applies from the selected month until you change it again. Previous months and already completed repair records will keep their original commission percentage.</p>
+  <div id="technicianCommissionHistory" class="technician-commission-history"></div>
+  <div class="modal-actions"><button class="secondary big" onclick="closeTechnicianCommissionModal()">CANCEL</button><button class="primary big" onclick="saveTechnicianCommission()">SAVE COMMISSION %</button></div>
+</div></div>
+
+
+<div id="technicianHistoryModal" class="modal"><div class="modal-box technician-history-modal-box">
+  <div class="panel-head"><div><span class="sf-security-kicker">COMMISSION HISTORY</span><h2>👨‍🔧 <span id="technicianHistoryModalName">Technician</span></h2><p class="muted">Commission percentages by effective month.</p></div><button class="iconbtn" onclick="closeTechnicianHistoryModal()">×</button></div>
+  <div id="technicianHistoryModalContent" class="technician-history-modal-content"></div>
+  <div class="modal-actions"><button class="secondary big" onclick="closeTechnicianHistoryModal()">CLOSE</button></div>
+</div></div>
+<div id="repairItemsHistoryModal" class="modal"><div class="modal-box repair-items-history-modal-box">
+  <div class="panel-head"><div><span class="sf-security-kicker">REPAIR ITEMS</span><h2>📦 Item / Cost Details — <span id="repairItemsHistoryModalToken">Repair</span></h2><p class="muted">Complete item, cost, sale and quantity details for this repair.</p></div><button class="iconbtn" onclick="closeRepairItemsHistoryModal()">×</button></div>
+  <div id="repairItemsHistoryModalContent" class="repair-items-history-modal-content"></div>
+  <div class="modal-actions"><button class="secondary big" onclick="closeRepairItemsHistoryModal()">CLOSE</button></div>
+</div></div>
+<div id="technicianProfileModal" class="modal"><div class="modal-box technician-profile-modal-box">
+  <div class="panel-head"><div><span class="sf-security-kicker">TECHNICIAN PROFILE</span><h2 id="technicianProfileModalTitle">👨‍🔧 Add Technician</h2></div><button class="iconbtn" onclick="closeTechnicianProfileModal()">×</button></div>
+  <form id="technicianProfileForm">
+    <div class="form2"><div><label>Technician Name *</label><input id="technicianProfileName" required placeholder="Technician name"></div><div><label>Phone Number</label><input id="technicianProfilePhone" placeholder="0771234567"></div></div>
+    <div class="form2"><div><label>Join Date</label><input id="technicianProfileJoinDate" type="date"></div><div><label>Status</label><select id="technicianProfileActive"><option value="true">Active</option><option value="false">Inactive</option></select></div></div>
+    <label>Address / Note</label><textarea id="technicianProfileNote" rows="3" placeholder="Address or other technician details"></textarea>
+    <p class="muted">Commission is managed separately by month. Add the technician first, then use <b>Set Commission</b> in the technician row.</p>
+    <div class="modal-actions"><button type="button" class="secondary big" onclick="closeTechnicianProfileModal()">CANCEL</button><button type="submit" class="primary big">SAVE TECHNICIAN</button></div>
+  </form>
+</div></div>
+
+<div id="creditPaymentModal" class="modal"><div class="modal-box">
+  <div class="panel-head"><h2>Record Credit Payment</h2><button class="iconbtn" onclick="closeCreditPaymentModal()">×</button></div>
+  <p id="creditPaymentCustomerText" class="muted"></p>
+  <label>Payment Amount (Rs.)</label><input id="creditPaymentAmount" type="number" min="0.01" step="0.01" placeholder="Enter amount">
+  <label>Reference / Note</label><input id="creditPaymentReference" placeholder="Optional note">
+  <button class="primary big" onclick="recordCreditPayment()">SAVE PAYMENT</button>
+</div></div>
+
+<div id="companyModal" class="modal"><div class="modal-box">
+  <div class="panel-head"><h2>Create New Company</h2><button class="iconbtn" onclick="closeCompanyModal()">×</button></div>
+  <form id="companyForm">
+    <label>Company / Shop Name *</label><input id="companyName" required placeholder="Shop Name">
+    <label>Phone Number</label><input id="companyPhone" placeholder="0771234567">
+    <label>Address</label><input id="companyAddress" placeholder="Main Street, Akkaraipattu">
+    <label>Invoice Footer</label><input id="companyFooter" placeholder="Thank you for your business!">
+    <button class="primary big" type="submit">CREATE COMPANY</button>
+  </form>
+</div></div>
+
+<div id="securityModal" class="modal"><div class="modal-box">
+  <div class="panel-head"><h2>Security Verification</h2><button class="iconbtn" onclick="closeSecurity()">×</button></div>
+  <p id="securityMessage">Enter the management password to open User Management.</p>
+  <input id="managementPassword" type="password" placeholder="Management password">
+  <button class="primary big" onclick="verifyManagement()">CONTINUE</button>
+  <div id="securityError" class="login-error"></div>
+</div></div>
+
+<div id="tempSecurityModal" class="modal sf-security-modal"><div class="modal-box sf-security-box"><div class="panel-head"><div><span class="sf-security-kicker">SECURITY VERIFICATION</span><h2 id="tempSecurityTitle">Management Approval</h2></div><button class="iconbtn sf-security-close" onclick="closeTemporarySecurity()" aria-label="Close security verification">×</button></div><div class="sf-security-icon">🔐</div><p id="tempSecurityMessage" class="sf-security-message">Enter the management password.</p><label for="tempManagementPassword">Management Password</label><input id="tempManagementPassword" type="password" autocomplete="off" placeholder="Enter management password" onkeydown="if(event.key==='Enter')verifyTemporarySecurity()"><button class="primary big sf-security-continue" onclick="verifyTemporarySecurity()">VERIFY &amp; CONTINUE</button><div id="tempSecurityError" class="login-error"></div></div></div>
+
+<div id="tempInvoiceViewModal" class="modal invoice-view-modal"><div class="modal-box invoice-view-box"><div class="panel-head"><h2>👁 Temporary Bill View — <span id="tempInvoiceViewTitle"></span></h2><button class="iconbtn" onclick="closeTemporaryInvoiceView()">×</button></div><div class="invoice-preview-shell"><iframe id="tempInvoiceViewFrame" title="Temporary Invoice Preview"></iframe></div><div class="modal-actions invoice-view-actions"><button class="secondary big" onclick="closeTemporaryInvoiceView()">CLOSE</button><button class="secondary big" onclick="exportCurrentTemporaryInvoice()">📊 EXPORT TO EXCEL</button><button class="primary big" onclick="reprintCurrentTemporaryInvoice()">🖨 REPRINT INVOICE</button></div></div></div>
+
+
+<div id="repairReceivingItemsModal" class="modal"><div class="modal-box repair-items-modal-box">
+  <div class="panel-head"><div><h2>📦 Receiving Items</h2><p class="muted">Add your own receiving items. You can edit or delete them later.</p></div><button class="iconbtn" onclick="closeRepairReceivingItemsModal()">×</button></div>
+  <div class="repair-add-item-row"><input id="newRepairReceivingItem" placeholder="e.g. Phone / Charger / Back Cover / SIM"><button class="primary" type="button" onclick="addRepairReceivingItem()">＋ ADD TO LIST</button></div>
+  <div id="repairReceivingItemsList" class="repair-item-card-list"></div>
+</div></div>
+<div id="repairItemModal" class="modal"><div class="modal-box">
+  <div class="panel-head"><div><h2 id="repairItemModalTitle">Repair Parts / Item Price</h2><p class="muted">Cost Price and Sale Price are kept separately.</p></div><button class="iconbtn" onclick="closeRepairItemModal()">×</button></div>
+  <div id="repairPriceEntryWarning" class="repair-price-entry-warning">⚠ If Cost Price or Sale Price is blank, this item will be highlighted on the Repair &amp; Service Dashboard so you can enter it later.</div>
+  <div class="form2"><div><label>Item / Part *</label><input id="repairPartName" placeholder="LCD, Battery, Charging Port..."></div><div><label>Item Cost Price (Rs.) <span class="muted">(Optional)</span></label><input id="repairPartPrice" type="number" min="0" step="0.01" placeholder="Enter cost price"></div></div>
+  <div class="form2"><div><label>Item Sale Price (Rs.) <span class="muted">(Optional)</span></label><input id="repairPartSalePrice" type="number" min="0" step="0.01" placeholder="Enter customer item sale price"></div><div><label>Quantity *</label><input id="repairPartQty" type="number" min="1" step="1" value="1"></div></div>
+  <div class="form2"><div><label>Total Cost</label><input id="repairPartTotal" disabled></div><div><label>Total Sale</label><input id="repairPartSaleTotal" disabled></div></div>
+  <div class="modal-actions"><button id="repairPartSaveButton" class="primary big" onclick="saveRepairPart()">ADD ITEM</button><button class="secondary big" onclick="closeRepairItemModal()">CANCEL</button></div>
+</div></div>
+<div id="repairPriceNotificationsModal" class="modal repair-price-notifications-modal"><div class="modal-box repair-price-notifications-box">
+  <div class="panel-head"><div><h2>🔔 Repair Price Notifications</h2><p class="muted">These repair items are missing Cost Price or Sale Price. Select an item to enter the missing price.</p></div><button class="iconbtn" onclick="closeRepairPriceNotifications()">×</button></div>
+  <div id="repairPriceNotificationsList" class="repair-price-notifications-list"></div>
+</div></div>
+<div id="repairDetailModal" class="modal repair-detail-modal">
+  <div class="modal-box repair-detail-modal-box">
+    <div class="panel-head repair-detail-modal-head"><div><h2>🔧 Repair Details — <span id="repairDetailToken"></span></h2></div><button class="iconbtn repair-detail-close" onclick="closeRepairDetailModal()" aria-label="Close Repair Details" title="Close">×</button></div>
+    <div id="repairDetailContent"></div>
+    <div class="repair-detail-actions"><button class="secondary" onclick="reprintRepairTokenFromDetail()">🖨 Reprint Token</button><button class="secondary" onclick="printRepairStickersFromDetail()">🏷 Print Stickers</button><button id="repairReturnJobButton" class="danger repair-return-job-btn" onclick="requestRepairReturnFromDetail()">↩ RETURN ITEM TO CUSTOMER</button><button id="repairHistoryDeleteButton" class="danger repair-history-delete-btn" onclick="deleteAuthorizedRepairFromDetail()">🗑 DELETE REPAIR RECORD</button><button class="primary" onclick="markRepairFinishedFromDetail()">✓ MARK REPAIR FINISHED</button></div>
+  </div>
+</div>
+<div id="repairStockModal" class="modal repair-stock-modal"><div class="modal-box repair-stock-modal-box">
+  <div class="panel-head"><div><h2>📦 Add Repair Part From Stock</h2><p class="muted">Select an available stock item. Stock is reduced immediately and tracked against this repair token.</p></div><button class="iconbtn" onclick="closeRepairStockModal()">×</button></div>
+  <div class="repair-stock-search-row"><input id="repairStockSearch" placeholder="Search stock item, code or category..." oninput="renderRepairStockPicker()"><div id="repairStockSelectedInfo" class="repair-stock-selected-info">Select a stock item above.</div></div>
+  <div id="repairStockList" class="repair-stock-list"></div>
+  <div class="repair-stock-bottom"><div><label>Quantity</label><input id="repairStockQty" type="number" min="1" step="1" value="1"></div><div class="repair-stock-note">✓ Cost Price and Sale Price come from Stock.<br>✓ Stock is linked to this repair token.<br>✓ Removing/deleting the repair part returns the stock.</div></div>
+  <div class="modal-actions"><button class="primary big" onclick="addRepairPartFromStock()">📦 ADD TO REPAIR &amp; REDUCE STOCK</button><button class="secondary big" onclick="closeRepairStockModal()">CANCEL</button></div>
+</div></div>
+<div id="repairStickerSettingsModal" class="modal repair-sticker-settings-modal">
+  <div class="modal-box repair-sticker-settings-box">
+    <div class="panel-head repair-sticker-settings-head"><div><span class="my-profit-kicker">PRINT CONTROL</span><h2>🏷 Sticker Printer Settings</h2><p class="muted">Set the sticker size, page size, gaps and layout. The preview updates immediately.</p></div><button class="iconbtn" onclick="closeRepairStickerSettings()">×</button></div>
+    <div class="repair-sticker-settings-layout">
+      <div class="repair-sticker-controls">
+        <div class="repair-setting-section"><div class="repair-setting-title">Sticker Size</div><div class="form2"><div><label>Sticker Width (mm)</label><input id="stickerWidthMm" type="number" min="5" max="100" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div><div><label>Sticker Height (mm)</label><input id="stickerHeightMm" type="number" min="5" max="100" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div></div></div>
+        <div class="repair-setting-section"><div class="repair-setting-title">Page / Roll Size</div><div class="form2"><div><label>Page Width (mm)</label><input id="stickerPageWidthMm" type="number" min="10" max="500" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div><div><label>Page Height (mm)</label><input id="stickerPageHeightMm" type="number" min="10" max="500" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div></div></div>
+        <div class="repair-setting-section"><div class="repair-setting-title">Spacing &amp; Margins</div><div class="form2"><div><label>Horizontal Gap (mm)</label><input id="stickerGapX" type="number" min="0" max="30" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div><div><label>Vertical Gap (mm)</label><input id="stickerGapY" type="number" min="0" max="30" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div><div><label>Left Margin (mm)</label><input id="stickerMarginLeft" type="number" min="0" max="50" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div><div><label>Top Margin (mm)</label><input id="stickerMarginTop" type="number" min="0" max="50" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div></div></div>
+        <div class="repair-setting-section"><div class="repair-setting-title">Layout</div><label class="repair-toggle-row"><input id="stickerAutoFit" type="checkbox" onchange="updateRepairStickerSettingsPreview()"><span><b>Automatically fit stickers to page</b><small>Calculates how many stickers fit using the page size, margins and gaps.</small></span></label><div class="form2"><div><label>Stickers Per Row</label><input id="stickerColumns" type="number" min="1" max="30" step="1" oninput="updateRepairStickerSettingsPreview()"></div><div><label>Rows</label><input id="stickerRows" type="number" min="1" max="50" step="1" oninput="updateRepairStickerSettingsPreview()"></div></div></div>
+        <div class="repair-setting-section"><div class="repair-setting-title">Sticker Content</div><div class="form2"><div><label>QR Code Size (mm)</label><input id="stickerQrSize" type="number" min="5" max="25" step="0.1" oninput="updateRepairStickerSettingsPreview()"></div><div><label>Copies</label><input id="stickerCopies" type="number" min="1" max="100" step="1" oninput="updateRepairStickerSettingsPreview()"></div></div><label class="repair-toggle-row"><input id="stickerShowIssue" type="checkbox" onchange="updateRepairStickerSettingsPreview()"><span><b>Show device issue</b><small>Turn off if you want a cleaner sticker.</small></span></label></div>
+        <div class="repair-setting-actions"><button class="secondary" type="button" onclick="resetRepairStickerSettings()">↺ RESET 30×20 / 3</button><button class="primary" type="button" onclick="saveRepairStickerSettings()">✓ SAVE SETTINGS</button></div>
+      </div>
+      <div class="repair-sticker-preview-panel"><div class="panel-head"><div><h3 style="margin:0">Live Preview</h3><p class="muted" id="stickerPreviewMeta">90 × 20 mm</p></div><span class="badge ok" id="stickerFitBadge">3 per row</span></div><div class="repair-sticker-preview-viewport"><div id="repairStickerLivePage" class="repair-sticker-live-page"></div></div><div class="repair-sticker-preview-note">Preview uses the real millimetre settings. QR code is generated from the repair token.</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="repairPrintLoading" class="repair-print-loading" style="display:none"><div class="repair-loading-card"><div class="repair-spinner"></div><strong>Saving Repair...</strong><span>Preparing token &amp; 3 stickers for printing</span></div></div>
+
+<div id="tempEditModal" class="modal"><div class="modal-box sale-edit-box"><div class="panel-head"><h2>✎ Edit Temporary Bill — <span id="tempEditInvoice"></span></h2><button class="iconbtn" onclick="closeTemporaryEdit()">×</button></div><p class="muted" id="tempEditNote">No Stock is changed by Temporary Accounts.</p><div class="form2"><div><label>Transaction Type</label><select id="tempEditType"><option value="Cash Sale">Cash Sale</option><option value="Credit Sale">Credit Sale</option></select></div><div><label>Customer Name</label><input id="tempEditCustomer"></div></div><div class="form2"><div><label>Phone / WhatsApp</label><input id="tempEditPhone"></div><div><label>Date &amp; Time</label><input id="tempEditDate" readonly></div></div><div class="panel-head" style="margin-top:16px"><h3 style="margin:0">Manual Items</h3><button type="button" class="secondary" onclick="addTemporaryEditItem()">＋ Add Item</button></div><div class="edit-items-header temp-edit-items-header"><span>Item</span><span>Qty</span><span>Unit Price</span><span>Total</span><span>Action</span></div><div id="tempEditItems" class="edit-sale-items"></div><div class="form2" style="margin-top:14px"><div class="edit-summary"><div>Subtotal <b id="tempEditTotal">Rs. 0</b></div></div></div><div class="edit-security-note">🔐 Security Verification passed. Saving records the editor User ID and date/time.</div><div class="modal-actions"><button class="secondary big" onclick="closeTemporaryEdit()">CANCEL</button><button class="primary big" onclick="saveEditedTemporarySale()">SAVE BILL CHANGES</button></div></div></div>
+
+<div id="invoiceViewModal" class="modal invoice-view-modal"><div class="modal-box invoice-view-box">
+  <div class="panel-head"><h2>👁 Bill View — <span id="invoiceViewTitle"></span></h2><button class="iconbtn" onclick="closeInvoiceView()">×</button></div>
+  <div class="invoice-view-note">Preview only — this bill will not close automatically. Use <b>Print Bill</b> when you are ready to print.</div>
+  <div class="invoice-preview-shell"><iframe id="invoiceViewFrame" title="Invoice Preview"></iframe></div>
+  <div class="modal-actions invoice-view-actions"><button class="secondary big" onclick="closeInvoiceView()">CLOSE</button><button class="primary big" onclick="printViewedInvoice()">🖨 PRINT BILL</button></div>
+</div></div>
+
+<div id="saleEditModal" class="modal"><div class="modal-box sale-edit-box">
+  <div class="panel-head"><h2>✎ Customize Bill — <span id="editSaleInvoice"></span></h2><button class="iconbtn" onclick="closeSaleEditModal()">×</button></div>
+  <p class="muted" id="editSaleCreditNote">Edit the customer, add items, change quantities, remove items or change the discount. Stock will be adjusted automatically.</p>
+  <div class="form2">
+    <div><label>Customer Name</label><input id="editSaleCustomer" placeholder="Customer name"></div>
+    <div><label>Phone / WhatsApp</label><input id="editSalePhone" type="tel" placeholder="0771234567"></div>
+  </div>
+  <label>Customer Address</label><input id="editSaleAddress" placeholder="Customer address">
+  <div class="panel-head" style="margin-top:16px"><h3 style="margin:0">🛒 Bill Items</h3><button type="button" class="secondary" onclick="addEditSaleItem()">＋ Add Item</button></div>
+  <div class="edit-items-header"><span>Product</span><span>Qty</span><span>Price × Qty</span><span>Action</span></div>
+  <div id="editSaleItems" class="edit-sale-items"></div>
+  <div class="form2" style="margin-top:14px">
+    <div><label>Discount (Rs.)</label><input id="editSaleDiscount" type="number" min="0" value="0" oninput="renderEditSaleTotals()"></div>
+    <div class="edit-summary"><div>Subtotal <b id="editSaleSubtotal">Rs. 0</b></div><div>Total <b id="editSaleTotal">Rs. 0</b></div></div>
+  </div>
+  <div class="edit-security-note">🔐 This bill was opened after Security Verification. Saving will record the editor User ID and date/time.</div>
+  <div class="modal-actions"><button class="secondary big" onclick="closeSaleEditModal()">CANCEL</button><button class="primary big" onclick="saveEditedSale()">SAVE BILL CHANGES</button></div>
+</div></div>
+
+<div id="categoryManagerModal" class="modal"><div class="modal-box category-manager-box">
+  <div class="panel-head"><h2>⚙ Category Management</h2><button class="iconbtn" onclick="closeCategoryManager()">×</button></div>
+  <p class="category-manager-help">Add new categories, or edit and delete your custom categories.</p>
+  <div class="category-add-manager-row"><input id="newCategoryName" placeholder="Enter new category name" onkeydown="if(event.key==='Enter')addCategoryFromManager()"><button class="primary" onclick="addCategoryFromManager()">＋ Add</button></div>
+  <div id="categoryManagerList" class="category-manager-list"></div>
+  <div class="category-manager-note">Default categories can be edited, but cannot be deleted while they are part of the standard system.</div>
+</div></div>
+
+<div id="productSecurityModal" class="modal"><div class="modal-box">
+  <div class="panel-head"><h2 id="productSecurityTitle">Security Verification</h2><button class="iconbtn" onclick="closeProductSecurity()">×</button></div>
+  <p id="productSecurityMessage">Enter the management password to continue.</p>
+  <input id="productManagementPassword" type="password" placeholder="Management password" onkeydown="if(event.key==='Enter') verifyProductManagementModal()">
+  <button class="primary big" onclick="verifyProductManagementModal()">CONTINUE</button>
+  <div id="productSecurityError" class="login-error"></div>
+</div></div>
+
+<div id="userModal" class="modal"><div class="modal-box">
+  <div class="panel-head"><h2>Add User</h2><button class="iconbtn" onclick="closeUserModal()">×</button></div>
+  <form id="userForm">
+    <label>Username *</label><input id="newUsername" required placeholder="cashier1">
+    <label>Password *</label><input id="newUserPassword" type="password" required placeholder="Enter password">
+    <label>Role</label><select id="newUserRole"><option>Normal User</option><option>Manager</option><option>Owner</option></select>
+    <button class="primary big" type="submit">ADD USER</button>
+  </form>
+</div></div>
+
+<div id="editUserRoleModal" class="modal"><div class="modal-box edit-user-role-box">
+  <div class="panel-head"><div><span class="my-profit-kicker">USER MANAGEMENT</span><h2>✎ Edit User Role</h2></div><button class="iconbtn" onclick="closeEditUserRole()">×</button></div>
+  <p class="muted">Change the access role for <b id="editUserRoleName">User</b>.</p>
+  <label>Role</label><select id="editUserRoleSelect"><option>Owner</option><option>Manager</option><option>Normal User</option></select>
+  <button class="primary big" type="button" onclick="saveEditedUserRole()">SAVE ROLE</button>
+</div></div>
+
+<div id="modal" class="modal"><div class="modal-box"><div class="panel-head"><h2>Add Product</h2><button class="iconbtn" onclick="closeModal()">×</button></div>
+<form id="productForm">
+<label>Product Name *</label><input name="name" required placeholder="Samsung A15 5G">
+<div class="form2"><div><label>Code / Barcode</label><input name="code" placeholder="Auto from shop name (e.g. RM00001)"><small class="muted">Leave blank to generate automatically from your shop name.</small></div><div><label>Category</label><div class="category-add-row"><select name="category" id="productCategorySelect"></select><button type="button" class="category-add-btn" onclick="addCategory()" title="Add new category">＋</button></div></div></div>
+<div class="form2"><div><label>IMEI / Serial</label><input name="imei"></div><div><label>Quantity *</label><input name="qty" type="number" min="0" value="1" required></div></div>
+<div class="form3"><div><label>Purchase Price</label><input name="cost" type="number" min="0" value="0"></div><div><label>Selling Price</label><input name="price" type="number" min="0" value="0"></div><div><label>Low Stock At</label><input name="low" type="number" min="0" value="2"></div></div>
+<div id="editProductStickerTools" class="edit-product-sticker-tools" style="display:none">
+  <div class="edit-product-sticker-head"><div><span>🏷 STICKER CONTROL</span><strong>Product Sticker</strong><small>Preview the current product label or choose exactly how many stickers to print.</small></div><div class="edit-product-sticker-icon">QR</div></div>
+  <div class="edit-product-sticker-actions"><button type="button" class="secondary" onclick="previewProductStickerFromEdit()">👁 Sticker Preview</button><button type="button" class="primary" onclick="openEditProductStickerPrintChoice()">🖨 Print Stickers</button></div>
+</div>
+<button class="primary big" type="submit">Save Product</button></form></div></div>
+
+<div id="editProductStickerPrintChoiceModal" class="modal product-sticker-choice-modal">
+  <div class="modal-box product-sticker-choice-box edit-product-print-choice-box">
+    <div class="panel-head product-sticker-choice-head"><div><span class="product-sticker-choice-kicker">EDIT PRODUCT</span><h2>🏷 Print Product Stickers</h2><p class="muted">Choose exactly how many stickers you want to print for this product.</p></div><button class="iconbtn" onclick="closeEditProductStickerPrintChoice()">×</button></div>
+    <div class="product-sticker-choice-card"><div class="product-sticker-choice-icon">QR</div><div><b id="editProductStickerPrintName">Product</b><span>Code: <strong id="editProductStickerPrintCode">—</strong></span><span>Current quantity: <strong id="editProductStickerPrintQty">0</strong></span></div></div>
+    <div class="edit-product-print-custom"><label>Custom number of stickers</label><input id="editProductStickerCustomQty" type="number" min="1" value="1" placeholder="Enter quantity"></div>
+    <div class="product-sticker-choice-actions edit-product-print-actions"><button class="secondary" onclick="printEditedProductStickers('one')">🏷 PRINT 1</button><button id="printEditedProductAllButton" class="primary" onclick="printEditedProductStickers('all')">🏷 PRINT ALL</button><button class="secondary" onclick="printEditedProductStickers('custom')">🏷 PRINT CUSTOM</button></div>
+    <button class="textbtn product-sticker-skip" onclick="closeEditProductStickerPrintChoice()">Cancel</button>
+  </div>
+</div>
+
+<div id="productStickerPrintChoiceModal" class="modal product-sticker-choice-modal">
+  <div class="modal-box product-sticker-choice-box">
+    <div class="panel-head product-sticker-choice-head"><div><span class="product-sticker-choice-kicker">PRODUCT SAVED</span><h2>🏷 Print Product Stickers?</h2><p class="muted">Choose how many labels you want to print for this new stock item.</p></div><button class="iconbtn" onclick="closeProductStickerPrintChoice()">×</button></div>
+    <div class="product-sticker-choice-card"><div class="product-sticker-choice-icon">🏷</div><div><b id="productStickerPrintName">Product</b><span>Code: <strong id="productStickerPrintCode">—</strong></span><span>Stock quantity: <strong id="productStickerPrintQty">0</strong></span></div></div>
+    <div class="product-sticker-choice-actions"><button class="secondary product-sticker-one-btn" onclick="printProductStickerChoice('one')">🏷 PRINT 1 STICKER</button><button id="printProductAllQtyButton" class="primary product-sticker-all-btn" onclick="printProductStickerChoice('all')">🏷 PRINT ALL STICKERS</button></div>
+    <button class="textbtn product-sticker-skip" onclick="closeProductStickerPrintChoice()">Skip printing for now</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
+<script src="firebase-central.js"></script>
+<script src="app.js"></script>
+<script>window.SF_FIREBASE_BOOTSTRAP_APP_DONE?.();</script>
+<script>
+if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+let deferredInstallPrompt;
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredInstallPrompt = e; const b=document.getElementById("installAppBtn"); if(b) b.style.display="inline-block"; });
+window.addEventListener("appinstalled", () => { deferredInstallPrompt=null; const b=document.getElementById("installAppBtn"); if(b) b.style.display="none"; });
+document.addEventListener("click", (e) => { if(e.target && e.target.id === "installAppBtn" && deferredInstallPrompt){ deferredInstallPrompt.prompt(); deferredInstallPrompt.userChoice.finally(()=>{deferredInstallPrompt=null; e.target.style.display="none";}); }});
+</script>
+<script>
+(function(){
+  function initSidebarGlassScroll(){
+    const nav=document.getElementById('sidebarNavScroll');
+    const controls=document.getElementById('sidebarGlassScroll');
+    const up=document.getElementById('sidebarScrollUp');
+    const down=document.getElementById('sidebarScrollDown');
+    const thumb=document.getElementById('sidebarScrollThumb');
+    const track=document.getElementById('sidebarScrollTrack');
+    if(!nav||!controls||!up||!down||!thumb||!track)return;
+    function update(){
+      const max=Math.max(0,nav.scrollHeight-nav.clientHeight);
+      const can=max>3;
+      controls.style.display=can?'flex':'none';
+      if(!can)return;
+      const trackH=track.clientHeight;
+      const thumbH=Math.max(24,Math.min(trackH,trackH*(nav.clientHeight/nav.scrollHeight)));
+      const travel=Math.max(0,trackH-thumbH);
+      thumb.style.height=thumbH+'px';
+      thumb.style.top=(max?travel*(nav.scrollTop/max):0)+'px';
+      up.disabled=nav.scrollTop<=2;
+      down.disabled=nav.scrollTop>=max-2;
+    }
+    up.addEventListener('click',()=>nav.scrollBy({top:-Math.max(260,nav.clientHeight*.65),behavior:'smooth'}));
+    down.addEventListener('click',()=>nav.scrollBy({top:Math.max(260,nav.clientHeight*.65),behavior:'smooth'}));
+    track.addEventListener('click',(e)=>{
+      if(e.target===thumb)return;
+      const r=track.getBoundingClientRect();
+      const ratio=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));
+      nav.scrollTo({top:(nav.scrollHeight-nav.clientHeight)*ratio,behavior:'smooth'});
+    });
+    let dragging=false;
+    thumb.addEventListener('pointerdown',(e)=>{dragging=true;thumb.setPointerCapture?.(e.pointerId);e.preventDefault()});
+    thumb.addEventListener('pointermove',(e)=>{
+      if(!dragging)return;
+      const r=track.getBoundingClientRect();
+      const h=thumb.offsetHeight;
+      const ratio=Math.max(0,Math.min(1,(e.clientY-r.top-h/2)/Math.max(1,r.height-h)));
+      nav.scrollTop=(nav.scrollHeight-nav.clientHeight)*ratio;
+    });
+    const stop=()=>{dragging=false};
+    thumb.addEventListener('pointerup',stop);thumb.addEventListener('pointercancel',stop);
+    nav.addEventListener('scroll',update,{passive:true});
+    window.addEventListener('resize',update);
+    if(window.ResizeObserver)new ResizeObserver(update).observe(nav);
+    setTimeout(update,100);setTimeout(update,500);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initSidebarGlassScroll);else initSidebarGlassScroll();
+})();
+</script>
+
+</body>
+</html>
